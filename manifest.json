@@ -1,0 +1,21 @@
+{
+  "name": "API Rate-Window Clock",
+  "short_name": "api-rate-window-clock",
+  "slug": "api-rate-window-clock",
+  "description": "Enter cache-hit, fresh-input, and output tokens to see a DeepSeek batch's declared cost now versus the next cheaper UTC price window.",
+  "url": "https://greattombproductions.github.io/api-rate-window-clock/",
+  "repo": "https://github.com/GreatTombProductions/api-rate-window-clock",
+  "github": "https://github.com/GreatTombProductions/api-rate-window-clock",
+  "data_source": "DeepSeek English and Chinese Models & Pricing pages",
+  "data_url": "https://api-docs.deepseek.com/quick_start/pricing/",
+  "records": "3 current model IDs, 2 language authority surfaces, 2 weekday peak windows",
+  "detail": "Static client-side calculator for DeepSeek's declared weekday peak/off-peak API schedule. Select a current model, enter cache-hit input, cache-miss input, and output tokens, and choose now or a planned local time. The result shows the selected USD band, component rates, cost, effective basis, and earliest cheaper boundary with wait time and savings. English and Chinese pricing pages are parsed independently and semantic-hash pinned; source conflict or missing rates disable calculation rather than producing a zero or average.",
+  "asymmetry": "API customers can see the vendor's individual prices yet still cannot answer the launch-time question without translating weekdays, UTC windows, effective dates, and separate cache/input/output rates. Vendors collect the higher charge when otherwise identical workloads drift into peak periods; independent developers and small teams benefit from a decision-ready timing estimate before starting a long batch.",
+  "pipeline_note": "Dependency-free EN/ZH table parser, normalized semantic pin, effective-dated declarative rate schema, weekday-aware Python/JavaScript mirrors, shared fixture table, full-object differential parity, and browser boundary smoke. Current raw HTML and SHA-256 receipts are archived.",
+  "search_modes": ["API cost calculator", "peak/off-peak clock", "DeepSeek pricing"],
+  "released_date": "2026-08-28",
+  "status": "released",
+  "deploy_branch": "gh-pages",
+  "deploy_method": "static",
+  "feedback_categories": ["data", "methodology", "source-drift", "bug"]
+}

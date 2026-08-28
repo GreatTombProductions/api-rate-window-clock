@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "en_semantic_sha256": "272d343dfa39eccf82d241c9d6673c0431bb2fe27931a3182e5ae3a2f0be316f",
+  "zh_semantic_sha256": "22772372e62c92f90b4e9879e5eca04388076bbcfd997f8f33a989bdaa8e5043",
+  "agreement_status": "matched",
+  "model_ids": [
+    "deepseek-v4-flash",
+    "deepseek-v4-pro",
+    "deepseek-v4-flash-vision-exp"
+  ],
+  "effective_at": "2026-08-16T16:00:00Z"
+}

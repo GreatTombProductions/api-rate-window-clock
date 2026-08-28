@@ -1,0 +1,82 @@
+[
+  {
+    "id": "flash-weekday-before-peak",
+    "request": {"timestamp": "2026-09-01T00:59:00Z", "model": "deepseek-v4-flash", "cache_hit": 10000000, "cache_miss": 1000000, "output": 1000000},
+    "expected": {"status": "ok", "regime": "off_peak", "cost": 0.95, "next_cheaper": null}
+  },
+  {
+    "id": "flash-first-peak-start-inclusive",
+    "request": {"timestamp": "2026-09-01T01:00:00Z", "model": "deepseek-v4-flash", "cache_hit": 10000000, "cache_miss": 1000000, "output": 1000000},
+    "expected": {"status": "ok", "regime": "peak", "cost": 1.9, "next_timestamp": "2026-09-01T04:00:00Z", "next_cost": 0.95, "wait_seconds": 10800, "savings_percent": 50.0}
+  },
+  {
+    "id": "flash-first-peak-last-minute",
+    "request": {"timestamp": "2026-09-01T03:59:00Z", "model": "deepseek-v4-flash", "cache_hit": 10000000, "cache_miss": 1000000, "output": 1000000},
+    "expected": {"status": "ok", "regime": "peak", "cost": 1.9, "next_timestamp": "2026-09-01T04:00:00Z", "next_cost": 0.95, "wait_seconds": 60, "savings_percent": 50.0}
+  },
+  {
+    "id": "first-peak-end-exclusive",
+    "request": {"timestamp": "2026-09-01T04:00:00Z", "model": "deepseek-v4-flash", "cache_hit": 10000000, "cache_miss": 1000000, "output": 1000000},
+    "expected": {"status": "ok", "regime": "off_peak", "cost": 0.95, "next_cheaper": null}
+  },
+  {
+    "id": "gap-between-windows",
+    "request": {"timestamp": "2026-09-01T05:59:00Z", "model": "deepseek-v4-flash", "cache_hit": 10000000, "cache_miss": 1000000, "output": 1000000},
+    "expected": {"status": "ok", "regime": "off_peak", "cost": 0.95, "next_cheaper": null}
+  },
+  {
+    "id": "second-peak-start-inclusive",
+    "request": {"timestamp": "2026-09-01T06:00:00Z", "model": "deepseek-v4-flash", "cache_hit": 10000000, "cache_miss": 1000000, "output": 1000000},
+    "expected": {"status": "ok", "regime": "peak", "cost": 1.9, "next_timestamp": "2026-09-01T10:00:00Z", "next_cost": 0.95, "wait_seconds": 14400, "savings_percent": 50.0}
+  },
+  {
+    "id": "second-peak-end-exclusive",
+    "request": {"timestamp": "2026-09-01T10:00:00Z", "model": "deepseek-v4-flash", "cache_hit": 10000000, "cache_miss": 1000000, "output": 1000000},
+    "expected": {"status": "ok", "regime": "off_peak", "cost": 0.95, "next_cheaper": null}
+  },
+  {
+    "id": "saturday-same-hour-is-off-peak",
+    "request": {"timestamp": "2026-09-05T02:00:00Z", "model": "deepseek-v4-flash", "cache_hit": 10000000, "cache_miss": 1000000, "output": 1000000},
+    "expected": {"status": "ok", "regime": "off_peak", "cost": 0.95, "next_cheaper": null}
+  },
+  {
+    "id": "sunday-same-hour-is-off-peak",
+    "request": {"timestamp": "2026-09-06T07:00:00Z", "model": "deepseek-v4-flash", "cache_hit": 10000000, "cache_miss": 1000000, "output": 1000000},
+    "expected": {"status": "ok", "regime": "off_peak", "cost": 0.95, "next_cheaper": null}
+  },
+  {
+    "id": "pro-component-arithmetic",
+    "request": {"timestamp": "2026-09-02T07:15:00Z", "model": "deepseek-v4-pro", "cache_hit": 10000000, "cache_miss": 1000000, "output": 1000000},
+    "expected": {"status": "ok", "regime": "peak", "cost": 5.72, "next_timestamp": "2026-09-02T10:00:00Z", "next_cost": 2.86, "wait_seconds": 9900, "savings_percent": 50.0}
+  },
+  {
+    "id": "vision-exp-shares-flash-rate",
+    "request": {"timestamp": "2026-09-03T12:00:00Z", "model": "deepseek-v4-flash-vision-exp", "cache_hit": 0, "cache_miss": 2000000, "output": 500000},
+    "expected": {"status": "ok", "regime": "off_peak", "cost": 0.77, "next_cheaper": null}
+  },
+  {
+    "id": "effective-boundary-inclusive",
+    "request": {"timestamp": "2026-08-16T16:00:00Z", "model": "deepseek-v4-flash", "cache_hit": 0, "cache_miss": 1000000, "output": 0},
+    "expected": {"status": "ok", "regime": "off_peak", "cost": 0.22, "next_cheaper": null}
+  },
+  {
+    "id": "before-effective-is-unavailable",
+    "request": {"timestamp": "2026-08-16T15:59:59Z", "model": "deepseek-v4-flash", "cache_hit": 0, "cache_miss": 1000000, "output": 0},
+    "expected": {"status": "unavailable"}
+  },
+  {
+    "id": "unknown-model-is-unavailable",
+    "request": {"timestamp": "2026-09-01T02:00:00Z", "model": "deepseek-does-not-exist", "cache_hit": 1, "cache_miss": 1, "output": 1},
+    "expected": {"status": "unavailable"}
+  },
+  {
+    "id": "zero-token-batch",
+    "request": {"timestamp": "2026-09-01T02:00:00Z", "model": "deepseek-v4-flash", "cache_hit": 0, "cache_miss": 0, "output": 0},
+    "expected": {"status": "ok", "regime": "peak", "cost": 0.0, "next_cheaper": null}
+  },
+  {
+    "id": "offset-input-normalizes-to-utc",
+    "request": {"timestamp": "2026-09-01T11:59:00+08:00", "model": "deepseek-v4-flash", "cache_hit": 10000000, "cache_miss": 1000000, "output": 1000000},
+    "expected": {"status": "ok", "regime": "peak", "cost": 1.9, "next_timestamp": "2026-09-01T04:00:00Z", "next_cost": 0.95, "wait_seconds": 60, "savings_percent": 50.0}
+  }
+]

@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Methodology for the API Rate-Window Clock: effective dates, UTC windows, token classes, and calculation limits.">
+  <title>Methodology · API Rate-Window Clock</title><link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="site-header"><a class="brand" href="index.html">API Rate-Window Clock</a><nav aria-label="Main navigation"><a href="methodology.html" aria-current="page">Methodology</a><a href="sources.html">Sources</a></nav></header>
+<main class="content-page">
+  <header class="content-hero"><p class="eyebrow">Reproducible method</p><h1>How the clock turns a vendor table into a timing answer</h1><p class="lede">The implementation is deliberately small: effective-date selection, weekday-aware UTC band classification, then component-by-component token arithmetic.</p></header>
+  <article class="prose">
+    <h2>1. Select the rate basis by effective time</h2>
+    <p>Every price basis carries an ISO 8601 <code>effective_at</code> timestamp. For a planned start, the calculator selects the latest complete basis whose effective timestamp is not later than the start. A future basis is never applied early. If no basis covers the time, the result is <strong>unavailable</strong> rather than zero.</p>
+    <p>The current basis became effective at <strong>2026-08-16 16:00 UTC</strong>. That timestamp came from DeepSeek's transition notice captured on August 15. The current pricing pages present the schedule as active but no longer repeat the transition date; the data receipt preserves that provenance distinction.</p>
+
+    <h2>2. Classify the start time in UTC</h2>
+    <p>The current DeepSeek page says peak hours are <strong>01:00–04:00 and 06:00–10:00 UTC, Monday through Friday</strong>. The intervals are half-open:</p>
+    <pre><code>peak = weekday AND (
+  01:00 &lt;= UTC time &lt; 04:00 OR
+  06:00 &lt;= UTC time &lt; 10:00
+)</code></pre>
+    <p>That means 03:59 UTC on a Tuesday is peak; 04:00 is off-peak. Saturday at 02:00 UTC is off-peak even though the clock hour would be peak on a weekday. The Chinese page states the equivalent Beijing windows: weekdays 09:00–12:00 and 14:00–18:00.</p>
+
+    <h2>3. Keep the three token classes separate</h2>
+    <p>Let <code>h</code> be cache-hit input tokens, <code>m</code> fresh/cache-miss input tokens, and <code>o</code> output tokens. Let the band's per-million rates be <code>rₕ</code>, <code>rₘ</code>, and <code>rₒ</code>.</p>
+    <pre><code>declared cost = (h × rₕ + m × rₘ + o × rₒ) / 1,000,000</code></pre>
+    <p>The calculator does not replace these with one blended token price. Whether a workload reuses context can materially change which component dominates the estimate.</p>
+
+    <h2>4. Find the next strictly cheaper boundary</h2>
+    <p>The engine enumerates exact schedule and effective-date boundaries for the next eight days. It recomputes the same token mix at each boundary and returns the earliest one with a strictly lower total. If the workload is already in the cheapest declared band and no announced future basis lowers the amount, it says so plainly.</p>
+
+    <h2>5. Separate current and announced-future prices</h2>
+    <p>The schema has a dedicated <code>announced_future_bases</code> collection. At the 2026-08-28 build, the live pages published no future replacement table. The site therefore applies only the current basis. A future table would be displayed separately and would remain mathematically inactive until its own effective timestamp.</p>
+
+    <h2>Source-change gate</h2>
+    <p>The build parses English and Chinese pages independently, normalizes the model IDs, versions, weekday scope, windows, and per-band rates, and hashes those semantic records. A changed semantic hash fails the build until a person or agent reviews the new table and explicitly accepts the pin. Source disagreement sets coverage to <code>conflict</code> and disables estimates; rates are never averaged.</p>
+
+    <h2>Limits</h2>
+    <ul>
+      <li>The selected band is based on the batch start time. A job that runs across a boundary may be billed differently request by request; this calculator does not simulate duration.</li>
+      <li>The estimate excludes taxes, reseller markups, retries, credits, undocumented discounts, and provider-side token-count differences.</li>
+      <li>Vision images are converted to input tokens under DeepSeek's separate conversion rule. Enter the resulting tokens; this tool does not infer image token counts.</li>
+      <li>This is a declared-price estimate, not independent proof of what appeared on an invoice. No provider-side per-request billing ledger is used.</li>
+      <li>Times before the current basis's effective timestamp are unavailable. The tool does not reconstruct retired prices.</li>
+    </ul>
+
+    <h2>Reproducibility</h2>
+    <p>The repository includes raw authority captures, source hashes, a dependency-free parser, the normalized semantic pin, Python and JavaScript calculation engines, one shared case table, differential parity tests, and a browser smoke test. See <a href="sources.html">source receipts</a> for the exact build inputs.</p>
+  </article>
+</main>
+<footer><p>Static, open source, and private by construction.</p><nav><a href="index.html">Calculator</a><a href="sources.html">Sources</a><a href="https://github.com/GreatTombProductions/api-rate-window-clock">GitHub</a></nav></footer>
+</body></html>

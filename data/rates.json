@@ -1,0 +1,165 @@
+{
+  "schema_version": 1,
+  "provider": "DeepSeek",
+  "currency": "USD",
+  "unit_tokens": 1000000,
+  "generated_at": "2026-08-28T10:14:02.715845Z",
+  "current_as_of": "2026-08-28T09:58:10Z",
+  "coverage_status": "matched",
+  "coverage_findings": [
+    "EN and ZH pages agree on model IDs/versions, weekday scope, UTC windows, and the 2:1 peak/off-peak relationship. Currency amounts are independent local price surfaces and were not FX-converted."
+  ],
+  "price_bases": [
+    {
+      "id": "deepseek-2026-08-16-banded",
+      "status": "current",
+      "effective_at": "2026-08-16T16:00:00Z",
+      "effective_date_provenance": {
+        "type": "historical_vendor_transition_notice",
+        "captured_at": "2026-08-15T00:00:00Z",
+        "quote": "The new prices take effect at 16:00 UTC on August 16, 2026.",
+        "note": "The live authority now presents this basis as current and no longer repeats the transition date."
+      },
+      "schedule": {
+        "timezone": "UTC",
+        "peak_weekdays": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "peak_windows": [
+          {
+            "start": "01:00",
+            "end": "04:00"
+          },
+          {
+            "start": "06:00",
+            "end": "10:00"
+          }
+        ],
+        "quote": "Peak hours are 01:00 - 04:00 and 06:00 - 10:00 UTC, Monday through Friday (all other hours are off-peak)."
+      },
+      "models": [
+        {
+          "id": "deepseek-v4-flash",
+          "name": "DeepSeek V4 Flash",
+          "version": "DeepSeek-V4-Flash-0731",
+          "rates": {
+            "off_peak": {
+              "cache_hit": 0.007,
+              "cache_miss": 0.22,
+              "output": 0.66
+            },
+            "peak": {
+              "cache_hit": 0.014,
+              "cache_miss": 0.44,
+              "output": 1.32
+            }
+          }
+        },
+        {
+          "id": "deepseek-v4-pro",
+          "name": "DeepSeek V4 Pro",
+          "version": "DeepSeek-V4-Pro-0813",
+          "rates": {
+            "off_peak": {
+              "cache_hit": 0.022,
+              "cache_miss": 0.66,
+              "output": 1.98
+            },
+            "peak": {
+              "cache_hit": 0.044,
+              "cache_miss": 1.32,
+              "output": 3.96
+            }
+          }
+        },
+        {
+          "id": "deepseek-v4-flash-vision-exp",
+          "name": "DeepSeek V4 Flash Vision Exp",
+          "version": "DeepSeek-V4-Flash-Vision-Exp",
+          "rates": {
+            "off_peak": {
+              "cache_hit": 0.007,
+              "cache_miss": 0.22,
+              "output": 0.66
+            },
+            "peak": {
+              "cache_hit": 0.014,
+              "cache_miss": 0.44,
+              "output": 1.32
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "announced_future_bases": [],
+  "sources": [
+    {
+      "language": "English",
+      "url": "https://api-docs.deepseek.com/quick_start/pricing/",
+      "captured_at": "2026-08-28T09:58:09Z",
+      "raw_file": "deepseek-pricing-en-20260828T095809Z.html",
+      "raw_sha256": "cf2c6fb2dd8a32a538f12a8176175b8809a3516326a5cb30dfe52d63c490a968",
+      "semantic_sha256": "272d343dfa39eccf82d241c9d6673c0431bb2fe27931a3182e5ae3a2f0be316f",
+      "currency": "USD",
+      "schedule_quote": "Peak hours are 01:00 - 04:00 and 06:00 - 10:00 UTC, Monday through Friday (all other hours are off-peak)."
+    },
+    {
+      "language": "Chinese",
+      "url": "https://api-docs.deepseek.com/zh-cn/quick_start/pricing/",
+      "captured_at": "2026-08-28T09:58:10Z",
+      "raw_file": "deepseek-pricing-zh-20260828T095810Z.html",
+      "raw_sha256": "899affbdbc33d0be620d8dea59e86f5036c11b5410b14d060b8d2874c74f38e5",
+      "semantic_sha256": "22772372e62c92f90b4e9879e5eca04388076bbcfd997f8f33a989bdaa8e5043",
+      "currency": "CNY",
+      "schedule_quote": "高峰时段为北京时间周一至周五 9:00 - 12:00、14:00 - 18:00（其余为空闲时段）。",
+      "local_currency_rates": {
+        "deepseek-v4-flash": {
+          "off_peak": {
+            "cache_hit": 0.05,
+            "cache_miss": 1.5,
+            "output": 4.5
+          },
+          "peak": {
+            "cache_hit": 0.1,
+            "cache_miss": 3.0,
+            "output": 9.0
+          }
+        },
+        "deepseek-v4-pro": {
+          "off_peak": {
+            "cache_hit": 0.15,
+            "cache_miss": 4.5,
+            "output": 13.5
+          },
+          "peak": {
+            "cache_hit": 0.3,
+            "cache_miss": 9.0,
+            "output": 27.0
+          }
+        },
+        "deepseek-v4-flash-vision-exp": {
+          "off_peak": {
+            "cache_hit": 0.05,
+            "cache_miss": 1.5,
+            "output": 4.5
+          },
+          "peak": {
+            "cache_hit": 0.1,
+            "cache_miss": 3.0,
+            "output": 9.0
+          }
+        }
+      }
+    }
+  ],
+  "limitations": [
+    "Estimate uses declared USD prices and the batch start time; it does not model a job spanning multiple bands.",
+    "Taxes, reseller markups, retries, credits, undocumented discounts, and provider-side token-count differences are excluded.",
+    "No provider invoice or per-request billing ledger is available here; this is a declared-price estimate, not a billing audit."
+  ]
+}
