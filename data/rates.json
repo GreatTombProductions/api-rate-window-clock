@@ -3,22 +3,21 @@
   "provider": "DeepSeek",
   "currency": "USD",
   "unit_tokens": 1000000,
-  "generated_at": "2026-08-28T10:14:02.715845Z",
-  "current_as_of": "2026-08-28T09:58:10Z",
+  "generated_at": "2026-10-05T22:47:29.566807Z",
+  "current_as_of": "2026-10-05T22:40:57Z",
   "coverage_status": "matched",
   "coverage_findings": [
-    "EN and ZH pages agree on model IDs/versions, weekday scope, UTC windows, and the 2:1 peak/off-peak relationship. Currency amounts are independent local price surfaces and were not FX-converted."
+    "EN and ZH pages agree on model IDs/versions, weekday scope, holiday exclusion, UTC windows, and the 2:1 peak/off-peak relationship. Currency amounts are independent local price surfaces and were not FX-converted."
   ],
   "price_bases": [
     {
-      "id": "deepseek-2026-08-16-banded",
+      "id": "deepseek-verified-2026-10-05",
       "status": "current",
-      "effective_at": "2026-08-16T16:00:00Z",
+      "effective_at": "2026-10-05T22:40:57Z",
       "effective_date_provenance": {
-        "type": "historical_vendor_transition_notice",
-        "captured_at": "2026-08-15T00:00:00Z",
-        "quote": "The new prices take effect at 16:00 UTC on August 16, 2026.",
-        "note": "The live authority now presents this basis as current and no longer repeats the transition date."
+        "type": "verified_from_capture",
+        "captured_at": "2026-10-05T22:40:57Z",
+        "note": "The vendor publishes no effective timestamp for this table. Flash prices were reduced on 2026-09-10 (changelog, date only) and the Chinese-public-holiday exclusion appeared between the 2026-09-12 and 2026-10-04 observations (no change date published). Estimates are offered only from the capture that verified the current table onward."
       },
       "schedule": {
         "timezone": "UTC",
@@ -39,23 +38,24 @@
             "end": "10:00"
           }
         ],
-        "quote": "Peak hours are 01:00 - 04:00 and 06:00 - 10:00 UTC, Monday through Friday (all other hours are off-peak)."
+        "holiday_exclusion": "cn_public_holidays",
+        "quote": "Peak hours are 01:00 - 04:00 and 06:00 - 10:00 UTC, Monday through Friday, excluding Chinese public holidays. All other hours are off-peak, including weekends and Chinese public holidays in full."
       },
       "models": [
         {
-          "id": "deepseek-v4-flash",
-          "name": "DeepSeek V4 Flash",
-          "version": "DeepSeek-V4-Flash-0731",
+          "id": "deepseek-flash",
+          "name": "DeepSeek Flash",
+          "version": "DeepSeek-V4.1-Flash",
           "rates": {
             "off_peak": {
-              "cache_hit": 0.007,
-              "cache_miss": 0.22,
-              "output": 0.66
+              "cache_hit": 0.003,
+              "cache_miss": 0.15,
+              "output": 0.6
             },
             "peak": {
-              "cache_hit": 0.014,
-              "cache_miss": 0.44,
-              "output": 1.32
+              "cache_hit": 0.006,
+              "cache_miss": 0.3,
+              "output": 1.2
             }
           }
         },
@@ -75,10 +75,53 @@
               "output": 3.96
             }
           }
+        }
+      ]
+    }
+  ],
+  "superseded_bases": [
+    {
+      "id": "deepseek-2026-08-16-banded",
+      "effective_at": "2026-08-16T16:00:00Z",
+      "superseded": "2026-09-10 (date only; the vendor changelog publishes no time)",
+      "note": "Historical record only; never used for an estimate.",
+      "source_capture": "deepseek-pricing-en-20260828T095809Z.html",
+      "schedule_quote": "Peak hours are 01:00 - 04:00 and 06:00 - 10:00 UTC, Monday through Friday (all other hours are off-peak).",
+      "models": [
+        {
+          "id": "deepseek-v4-flash",
+          "version": "DeepSeek-V4-Flash-0731",
+          "rates": {
+            "off_peak": {
+              "cache_hit": 0.007,
+              "cache_miss": 0.22,
+              "output": 0.66
+            },
+            "peak": {
+              "cache_hit": 0.014,
+              "cache_miss": 0.44,
+              "output": 1.32
+            }
+          }
+        },
+        {
+          "id": "deepseek-v4-pro",
+          "version": "DeepSeek-V4-Pro-0813",
+          "rates": {
+            "off_peak": {
+              "cache_hit": 0.022,
+              "cache_miss": 0.66,
+              "output": 1.98
+            },
+            "peak": {
+              "cache_hit": 0.044,
+              "cache_miss": 1.32,
+              "output": 3.96
+            }
+          }
         },
         {
           "id": "deepseek-v4-flash-vision-exp",
-          "name": "DeepSeek V4 Flash Vision Exp",
           "version": "DeepSeek-V4-Flash-Vision-Exp",
           "rates": {
             "off_peak": {
@@ -101,33 +144,33 @@
     {
       "language": "English",
       "url": "https://api-docs.deepseek.com/quick_start/pricing/",
-      "captured_at": "2026-08-28T09:58:09Z",
-      "raw_file": "deepseek-pricing-en-20260828T095809Z.html",
-      "raw_sha256": "cf2c6fb2dd8a32a538f12a8176175b8809a3516326a5cb30dfe52d63c490a968",
-      "semantic_sha256": "272d343dfa39eccf82d241c9d6673c0431bb2fe27931a3182e5ae3a2f0be316f",
+      "captured_at": "2026-10-05T22:40:57Z",
+      "raw_file": "deepseek-pricing-en-20261005T224057Z.html",
+      "raw_sha256": "210f102275ccf1a6542f08a3bc9e4b4c7c83278cb74b35217bffa112df6363b2",
+      "semantic_sha256": "feeaccc2101d0b61ee6b82821ed2296bc068111659f4d78c254831bc1c0155d4",
       "currency": "USD",
-      "schedule_quote": "Peak hours are 01:00 - 04:00 and 06:00 - 10:00 UTC, Monday through Friday (all other hours are off-peak)."
+      "schedule_quote": "Peak hours are 01:00 - 04:00 and 06:00 - 10:00 UTC, Monday through Friday, excluding Chinese public holidays. All other hours are off-peak, including weekends and Chinese public holidays in full."
     },
     {
       "language": "Chinese",
       "url": "https://api-docs.deepseek.com/zh-cn/quick_start/pricing/",
-      "captured_at": "2026-08-28T09:58:10Z",
-      "raw_file": "deepseek-pricing-zh-20260828T095810Z.html",
-      "raw_sha256": "899affbdbc33d0be620d8dea59e86f5036c11b5410b14d060b8d2874c74f38e5",
-      "semantic_sha256": "22772372e62c92f90b4e9879e5eca04388076bbcfd997f8f33a989bdaa8e5043",
+      "captured_at": "2026-10-05T22:40:57Z",
+      "raw_file": "deepseek-pricing-zh-20261005T224057Z.html",
+      "raw_sha256": "5a7b1832592387340f2fc456399b34b89b05f3fa167c2e35909e2fa4afe021e3",
+      "semantic_sha256": "78f6c4ffd2d1414e697d3313472d3dff653050e3d4706d41f686a1183af0f022",
       "currency": "CNY",
-      "schedule_quote": "高峰时段为北京时间周一至周五 9:00 - 12:00、14:00 - 18:00（其余为空闲时段）。",
+      "schedule_quote": "北京时间周一至周五（不含中国法定节假日）9:00 - 12:00、14:00 - 18:00 为高峰时段；其余时段，包括周末及中国法定节假日全天均为空闲时段。",
       "local_currency_rates": {
-        "deepseek-v4-flash": {
+        "deepseek-flash": {
           "off_peak": {
-            "cache_hit": 0.05,
-            "cache_miss": 1.5,
-            "output": 4.5
+            "cache_hit": 0.02,
+            "cache_miss": 1.0,
+            "output": 4.0
           },
           "peak": {
-            "cache_hit": 0.1,
-            "cache_miss": 3.0,
-            "output": 9.0
+            "cache_hit": 0.04,
+            "cache_miss": 2.0,
+            "output": 8.0
           }
         },
         "deepseek-v4-pro": {
@@ -140,18 +183,6 @@
             "cache_hit": 0.3,
             "cache_miss": 9.0,
             "output": 27.0
-          }
-        },
-        "deepseek-v4-flash-vision-exp": {
-          "off_peak": {
-            "cache_hit": 0.05,
-            "cache_miss": 1.5,
-            "output": 4.5
-          },
-          "peak": {
-            "cache_hit": 0.1,
-            "cache_miss": 3.0,
-            "output": 9.0
           }
         }
       }

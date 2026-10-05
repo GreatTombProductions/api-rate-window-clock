@@ -4,7 +4,7 @@ A static calculator for one concrete API-cost decision: **will the same DeepSeek
 
 **Live site:** https://greattombproductions.github.io/api-rate-window-clock/
 
-DeepSeek's current declared schedule has weekday peak rates at 01:00–04:00 and 06:00–10:00 UTC. All other hours—including weekends—are off-peak. The calculator keeps cache-hit input, cache-miss input, and output tokens separate, then reports:
+DeepSeek's current declared schedule has weekday peak rates at 01:00–04:00 and 06:00–10:00 UTC, excluding Chinese public holidays. All other hours—including weekends and those holidays—are off-peak. DeepSeek publishes no holiday list, so the calculator asks whether the start's Beijing date is a Chinese public holiday instead of guessing, and shows the holiday price whenever the answer would change the band. The calculator keeps cache-hit input, cache-miss input, and output tokens separate, then reports:
 
 - declared cost at a current or planned start time;
 - exact rate band, model version, and effective basis;
@@ -16,18 +16,18 @@ No API key, model call, backend, account, analytics, or usage upload is involved
 
 ## Why this exists
 
-A vendor can publish every price and still leave the actual decision opaque. UTC windows, weekdays, effective dates, model versions, and three token classes turn “what will this run cost?” into manual schedule arithmetic. The portage layer is not another table—it is the answer at the launch boundary.
+A vendor can publish every price and still leave the actual decision opaque. UTC windows, weekdays, effective dates, model versions, and three token classes turn “what will this run cost?” into manual schedule arithmetic. This page gives the answer at the moment you decide when to launch, not another table.
 
 ## Authority
 
-The 2026-08-28 build independently parsed DeepSeek's English and Chinese Models & Pricing pages:
+The 2026-10-05 refresh independently parsed DeepSeek's English and Chinese Models & Pricing pages (the first build used 2026-08-28 captures; that table is kept as labeled history):
 
 - https://api-docs.deepseek.com/quick_start/pricing/
 - https://api-docs.deepseek.com/zh-cn/quick_start/pricing/
 
-Both urllib and curl returned byte-identical payloads per page. The two language surfaces agree on model IDs/versions, weekday scope, equivalent windows, and the stated 2:1 peak/off-peak relationship. USD and CNY are independent vendor price surfaces; the build does not use FX conversion as an agreement test.
+The two language surfaces agree on model IDs/versions, weekday scope, the holiday exclusion, equivalent windows, and the stated 2:1 peak/off-peak relationship. USD and CNY are independent vendor price surfaces; the build does not use FX conversion as an agreement test.
 
-Normalized semantic records are pinned. A changed model, window, weekday, or rate fails the build pending inspection. Missing or conflicting rates become `unavailable`, never zero.
+Normalized semantic records are pinned. A changed model, window, weekday, holiday rule, or rate fails the build pending inspection. The vendor publishes no effective timestamp for the current table, so estimates start at the capture that verified it. Missing or conflicting rates become `unavailable`, never zero.
 
 ## Calculation
 
@@ -37,7 +37,7 @@ For cache-hit tokens `h`, cache-miss tokens `m`, output tokens `o`, and per-mill
 cost = (h × rh + m × rm + o × ro) / 1,000,000
 ```
 
-Peak intervals are half-open and apply Monday–Friday only:
+Peak intervals are half-open and apply Monday–Friday only, except on a Beijing date you mark as a Chinese public holiday:
 
 ```text
 [01:00, 04:00) UTC

@@ -7,7 +7,7 @@ An independent developer, researcher, or small business is about to start a Deep
 ## Authority and scope
 
 - Current semantic authorities: DeepSeek's English and Chinese Models & Pricing pages.
-- Current live schedule verified 2026-08-28 through both urllib and curl.
+- Current live schedule verified 2026-08-28; refreshed 2026-10-05 (V4.1-Flash prices from the 2026-09-10 reduction, legacy Flash IDs retired, Chinese-public-holiday exclusion; current basis claimed only from its verifying capture; caller-declared holiday because no calendar is published).
 - USD and CNY are independent vendor price surfaces. Cross-language agreement means model coverage, weekday/window structure, and the stated off-peak-to-peak relationship agree; it does not mean one currency is converted into the other.
 - The historical effective boundary, `2026-08-16T16:00:00Z`, comes from DeepSeek's transition notice captured on 2026-08-15. The current pages present the schedule as active and no longer repeat that transition date. This provenance distinction must remain visible.
 - The v1 calculator estimates USD charges only. The Chinese page is a structural cross-check and is displayed as a second authority surface.

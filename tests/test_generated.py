@@ -13,10 +13,15 @@ def test_generated_rate_contract() -> None:
     assert DATA["coverage_status"] == "matched"
     assert DATA["currency"] == "USD"
     assert DATA["unit_tokens"] == 1_000_000
-    assert DATA["current_as_of"] == "2026-08-28T09:58:10Z"
+    assert DATA["current_as_of"] == "2026-10-05T22:40:57Z"
     assert len(DATA["price_bases"]) == 1
     assert DATA["announced_future_bases"] == []
-    assert len(DATA["price_bases"][0]["models"]) == 3
+    basis = DATA["price_bases"][0]
+    assert [m["id"] for m in basis["models"]] == ["deepseek-flash", "deepseek-v4-pro"]
+    assert basis["effective_at"] == DATA["current_as_of"]  # claimed only from the verifying capture
+    assert basis["schedule"]["holiday_exclusion"] == "cn_public_holidays"
+    prior = DATA["superseded_bases"][0]
+    assert prior["id"] == "deepseek-2026-08-16-banded" and "never used" in prior["note"]
     assert len(DATA["sources"]) == 2
 
 

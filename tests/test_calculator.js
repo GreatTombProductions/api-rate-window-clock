@@ -24,6 +24,11 @@ function assertExpected(result, expected, id) {
     assert.strictEqual(result.next_cheaper.wait_seconds, expected.wait_seconds, id);
     assert(Math.abs(result.next_cheaper.savings_percent - expected.savings_percent) < 1e-9, id);
   }
+  if ('holiday_sensitive' in expected) assert.strictEqual(result.holiday_sensitive, expected.holiday_sensitive, id);
+  if ('cost_if_cn_holiday' in expected) {
+    if (expected.cost_if_cn_holiday === null) assert.strictEqual(result.cost_if_cn_holiday, null, id);
+    else assert(Math.abs(result.cost_if_cn_holiday - expected.cost_if_cn_holiday) < 1e-12, id);
+  }
 }
 
 for (const testCase of cases) assertExpected(calculate(data, testCase.request), testCase.expected, testCase.id);
@@ -40,7 +45,7 @@ const futureData = structuredClone(data);
 const future = structuredClone(futureData.price_bases[0]);
 future.id = 'future-lower-test';
 future.status = 'announced';
-future.effective_at = '2026-09-01T02:30:00Z';
+future.effective_at = '2026-10-13T02:30:00Z';
 for (const model of future.models) {
   for (const band of Object.values(model.rates)) {
     for (const category of Object.keys(band)) band[category] /= 4;
@@ -48,14 +53,15 @@ for (const model of future.models) {
 }
 futureData.price_bases.push(future);
 const futureResult = calculate(futureData, {
-  timestamp: '2026-09-01T02:00:00Z', model: 'deepseek-v4-flash',
+  timestamp: '2026-10-13T02:00:00Z', model: 'deepseek-flash',
   cache_hit: 10000000, cache_miss: 1000000, output: 1000000
 });
-assert.strictEqual(futureResult.basis_id, 'deepseek-2026-08-16-banded');
-assert.strictEqual(futureResult.next_cheaper.timestamp, '2026-09-01T02:30:00Z');
+assert.strictEqual(futureResult.basis_id, 'deepseek-verified-2026-10-05');
+assert.strictEqual(futureResult.next_cheaper.timestamp, '2026-10-13T02:30:00Z');
 assert.strictEqual(futureResult.next_cheaper.basis_id, 'future-lower-test');
-assert.strictEqual(futureResult.next_cheaper.cost, 0.475);
+assert.strictEqual(futureResult.next_cheaper.cost, 0.39);
 
 assert.throws(() => calculate(data, { ...cases[0].request, cache_hit: -1 }), /non-negative integer/);
-assert.throws(() => calculate(data, { ...cases[0].request, timestamp: '2026-09-01T01:00:00' }), /offset/);
-console.log(`JavaScript calculator passed ${cases.length} shared cases and 5 boundary/error checks`);
+assert.throws(() => calculate(data, { ...cases[0].request, timestamp: '2026-10-13T01:00:00' }), /offset/);
+assert.throws(() => calculate(data, { ...cases[0].request, cn_holiday: 'yes' }), /cn_holiday/);
+console.log(`JavaScript calculator passed ${cases.length} shared cases and 6 boundary/error checks`);

@@ -14,14 +14,28 @@ PROJECT = Path(__file__).resolve().parents[1]
 RAW = PROJECT / "data" / "raw"
 OUTPUT = PROJECT / "data" / "rates.json"
 PIN = PROJECT / "pipeline" / "expected_semantics.json"
-EFFECTIVE_AT = "2026-08-16T16:00:00Z"
+# Superseded basis: the vendor's transition notice gave an exact start; the end
+# is the 2026-09-10 changelog price reduction, published as a date only.
+PRIOR_BASIS = {
+    "id": "deepseek-2026-08-16-banded",
+    "effective_at": "2026-08-16T16:00:00Z",
+    "superseded": "2026-09-10 (date only; the vendor changelog publishes no time)",
+}
 
 
-def _latest(language: str) -> Path:
+def _captures(language: str) -> list[Path]:
     candidates = sorted(RAW.glob(f"deepseek-pricing-{language}-*.html"))
     if not candidates:
         raise FileNotFoundError(f"No raw {language} pricing capture. Run pipeline/fetch.py.")
-    return candidates[-1]
+    return candidates
+
+
+def _latest(language: str) -> Path:
+    return _captures(language)[-1]
+
+
+def _earliest(language: str) -> Path:
+    return _captures(language)[0]
 
 
 def _capture_timestamp(path: Path) -> str:
@@ -32,14 +46,14 @@ def _capture_timestamp(path: Path) -> str:
     return parsed.isoformat().replace("+00:00", "Z")
 
 
-def _pin_record(en: dict, zh: dict, agreement: dict) -> dict:
+def _pin_record(en: dict, zh: dict, agreement: dict, effective_at: str) -> dict:
     return {
         "schema_version": 1,
         "en_semantic_sha256": en["semantic_sha256"],
         "zh_semantic_sha256": zh["semantic_sha256"],
         "agreement_status": agreement["status"],
         "model_ids": [model["id"] for model in en["models"]],
-        "effective_at": EFFECTIVE_AT,
+        "effective_at": effective_at,
     }
 
 
@@ -49,9 +63,14 @@ def main() -> int:
     args = parser.parse_args()
 
     en_path, zh_path = _latest("en"), _latest("zh")
+    prior_en_path = _earliest("en")
+    prior_en = parse_file(prior_en_path, "en")
     en, zh = parse_file(en_path, "en"), parse_file(zh_path, "zh")
     agreement = compare_surfaces(en, zh)
-    pin = _pin_record(en, zh, agreement)
+    captured_at = max(_capture_timestamp(en_path), _capture_timestamp(zh_path))
+    # The vendor publishes no effective timestamp for the current table, so the
+    # current basis is claimed only from the capture that verified it.
+    pin = _pin_record(en, zh, agreement, captured_at)
 
     if args.accept_source_change:
         PIN.write_text(json.dumps(pin, indent=2) + "\n")
@@ -68,8 +87,8 @@ def main() -> int:
                 f"actual={json.dumps(pin, sort_keys=True)}"
             )
 
-    captured_at = max(_capture_timestamp(en_path), _capture_timestamp(zh_path))
     display_names = {
+        "deepseek-flash": "DeepSeek Flash",
         "deepseek-v4-flash": "DeepSeek V4 Flash",
         "deepseek-v4-pro": "DeepSeek V4 Pro",
         "deepseek-v4-flash-vision-exp": "DeepSeek V4 Flash Vision Exp",
@@ -93,17 +112,30 @@ def main() -> int:
         "coverage_status": agreement["status"],
         "coverage_findings": agreement["findings"],
         "price_bases": [{
-            "id": "deepseek-2026-08-16-banded",
+            "id": "deepseek-verified-" + captured_at[:10],
             "status": "current",
-            "effective_at": EFFECTIVE_AT,
+            "effective_at": captured_at,
             "effective_date_provenance": {
-                "type": "historical_vendor_transition_notice",
-                "captured_at": "2026-08-15T00:00:00Z",
-                "quote": "The new prices take effect at 16:00 UTC on August 16, 2026.",
-                "note": "The live authority now presents this basis as current and no longer repeats the transition date.",
+                "type": "verified_from_capture",
+                "captured_at": captured_at,
+                "note": (
+                    "The vendor publishes no effective timestamp for this table. Flash prices were reduced on "
+                    "2026-09-10 (changelog, date only) and the Chinese-public-holiday exclusion appeared between "
+                    "the 2026-09-12 and 2026-10-04 observations (no change date published). Estimates are offered "
+                    "only from the capture that verified the current table onward."
+                ),
             },
             "schedule": en["schedule"],
             "models": models,
+        }],
+        "superseded_bases": [{
+            **PRIOR_BASIS,
+            "note": "Historical record only; never used for an estimate.",
+            "source_capture": prior_en_path.name,
+            "schedule_quote": prior_en["schedule"]["quote"],
+            "models": [
+                {"id": m["id"], "version": m["version"], "rates": prior_en["rates"][m["id"]]} for m in prior_en["models"]
+            ],
         }],
         "announced_future_bases": [],
         "sources": [

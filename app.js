@@ -68,7 +68,8 @@ function requestFromForm() {
     model: $('model').value,
     cache_hit: readInteger('cache-hit', 'Cache-hit tokens'),
     cache_miss: readInteger('cache-miss', 'Fresh input tokens'),
-    output: readInteger('output', 'Output tokens')
+    output: readInteger('output', 'Output tokens'),
+    cn_holiday: $('cn-holiday').checked
   };
 }
 
@@ -101,6 +102,18 @@ function renderResult(result) {
   $('result-status').textContent = result.regime === 'peak' ? 'Peak rate' : 'Off-peak rate';
   $('result-status').className = `status-pill ${result.regime}`;
   $('selected-cost').textContent = money(result.cost);
+  const weekday = new Intl.DateTimeFormat('en-US', { timeZone: 'UTC', weekday: 'long' }).format(new Date(result.beijing_date + 'T00:00:00Z'));
+  $('holiday-label').textContent = `${weekday} ${result.beijing_date} (the start's Beijing date) is a Chinese public holiday`;
+  const caveat = $('holiday-caveat');
+  if (result.holiday_sensitive && !result.cn_holiday) {
+    caveat.hidden = false;
+    caveat.textContent = `Peak only if ${result.beijing_date} (Beijing) is not a Chinese public holiday. On a holiday this batch is billed off-peak: ${money(result.cost_if_cn_holiday)}. DeepSeek does not publish its holiday list, so check the official calendar.`;
+  } else if (result.holiday_sensitive && result.cn_holiday) {
+    caveat.hidden = false;
+    caveat.textContent = `Off-peak because you marked ${result.beijing_date} (Beijing) as a Chinese public holiday. On an ordinary weekday this hour is peak.`;
+  } else {
+    caveat.hidden = true;
+  }
   const totalTokens = result.tokens.cache_hit + result.tokens.cache_miss + result.tokens.output;
   $('selected-summary').textContent = `${integer(totalTokens)} total tokens at the ${result.regime.replace('_', '-')} USD schedule.`;
   $('selected-regime').textContent = result.regime === 'peak' ? 'Weekday peak' : 'Off-peak';
@@ -171,7 +184,7 @@ $('use-now').addEventListener('click', () => { setMode('now'); calculate(); });
 $('use-planned').addEventListener('click', () => { setMode('planned'); calculate(); });
 $('planned-time').addEventListener('change', calculate);
 $('model').addEventListener('change', calculate);
-for (const id of ['cache-hit', 'cache-miss', 'output']) $(id).addEventListener('change', calculate);
+for (const id of ['cache-hit', 'cache-miss', 'output', 'cn-holiday']) $(id).addEventListener('change', calculate);
 for (const button of document.querySelectorAll('[data-fixture]')) {
   button.addEventListener('click', () => {
     setMode('planned');

@@ -1,0 +1,39 @@
+{
+  "fetched_at": "20261005T224057Z",
+  "sources": {
+    "en": {
+      "url": "https://api-docs.deepseek.com/quick_start/pricing/",
+      "file": "deepseek-pricing-en-20261005T224057Z.html",
+      "bytes": 23982,
+      "sha256": "210f102275ccf1a6542f08a3bc9e4b4c7c83278cb74b35217bffa112df6363b2",
+      "transport": "urllib",
+      "transport_hashes": {
+        "urllib": "210f102275ccf1a6542f08a3bc9e4b4c7c83278cb74b35217bffa112df6363b2"
+      },
+      "prior_errors": [],
+      "headers": {
+        "Last-Modified": "Thu, 24 Sep 2026 09:35:27 GMT",
+        "Etag": "\"20be8baf3684a937d04325535534386c\"",
+        "Content-Type": "text/html",
+        "Date": "Mon, 05 Oct 2026 22:40:58 GMT"
+      }
+    },
+    "zh": {
+      "url": "https://api-docs.deepseek.com/zh-cn/quick_start/pricing/",
+      "file": "deepseek-pricing-zh-20261005T224057Z.html",
+      "bytes": 24116,
+      "sha256": "5a7b1832592387340f2fc456399b34b89b05f3fa167c2e35909e2fa4afe021e3",
+      "transport": "urllib",
+      "transport_hashes": {
+        "urllib": "5a7b1832592387340f2fc456399b34b89b05f3fa167c2e35909e2fa4afe021e3"
+      },
+      "prior_errors": [],
+      "headers": {
+        "Last-Modified": "Thu, 24 Sep 2026 09:35:28 GMT",
+        "Etag": "\"10a200f787d3684442c9a7383589fef0\"",
+        "Content-Type": "text/html",
+        "Date": "Mon, 05 Oct 2026 22:40:58 GMT"
+      }
+    }
+  }
+}

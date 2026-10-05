@@ -27,29 +27,45 @@ def _minutes(value: str) -> int:
     return hour * 60 + minute
 
 
-def _regime(basis: dict[str, Any], timestamp: datetime) -> str:
+def beijing_date(timestamp: datetime) -> str:
+    """Calendar date in Beijing (UTC+8, no DST) — the date a CN holiday is defined on."""
+    return (timestamp + timedelta(hours=8)).date().isoformat()
+
+
+def _weekday_peak(basis: dict[str, Any], timestamp: datetime) -> bool:
     schedule = basis["schedule"]
     iso_weekday = timestamp.isoweekday()
     minute = timestamp.hour * 60 + timestamp.minute
     if iso_weekday in schedule["peak_weekdays"]:
         for window in schedule["peak_windows"]:
             if _minutes(window["start"]) <= minute < _minutes(window["end"]):
-                return "peak"
-    return "off_peak"
+                return True
+    return False
+
+
+def _regime(basis: dict[str, Any], timestamp: datetime, holiday: bool = False) -> str:
+    """Peak only inside a weekday window — and, when the schedule excludes Chinese
+    public holidays, only if the caller has not declared this Beijing date a holiday.
+    The vendor publishes no holiday calendar, so the declaration is the caller's."""
+    if not _weekday_peak(basis, timestamp):
+        return "off_peak"
+    if holiday and basis["schedule"].get("holiday_exclusion"):
+        return "off_peak"
+    return "peak"
 
 
 def _model(basis: dict[str, Any], model_id: str) -> dict[str, Any] | None:
     return next((model for model in basis["models"] if model["id"] == model_id), None)
 
 
-def _cost_at(data: dict[str, Any], timestamp: datetime, model_id: str, tokens: dict[str, int]) -> dict[str, Any] | None:
+def _cost_at(data: dict[str, Any], timestamp: datetime, model_id: str, tokens: dict[str, int], holiday: bool = False) -> dict[str, Any] | None:
     basis = _basis_at(data, timestamp)
     if basis is None:
         return None
     model = _model(basis, model_id)
     if model is None:
         return None
-    regime = _regime(basis, timestamp)
+    regime = _regime(basis, timestamp, holiday)
     rates = model["rates"].get(regime)
     if not rates or any(rates.get(field) is None for field in TOKEN_FIELDS):
         return None
@@ -61,6 +77,8 @@ def _cost_at(data: dict[str, Any], timestamp: datetime, model_id: str, tokens: d
         "model_version": model["version"],
         "rates": {field: rates[field] for field in TOKEN_FIELDS},
         "cost": round(total, 12),
+        "holiday_rule": basis["schedule"].get("holiday_exclusion"),
+        "holiday_sensitive": bool(basis["schedule"].get("holiday_exclusion")) and _weekday_peak(basis, timestamp),
     }
 
 
@@ -71,6 +89,7 @@ def _candidate_boundaries(data: dict[str, Any], timestamp: datetime) -> list[dat
         day = midnight + timedelta(days=day_offset)
         candidates.add(day)
         candidates.add(day + timedelta(days=1))
+        candidates.add(day + timedelta(hours=16))  # Beijing midnight
         for basis in data["price_bases"]:
             for window in basis["schedule"]["peak_windows"]:
                 for edge in (window["start"], window["end"]):
@@ -89,6 +108,9 @@ def calculate(data: dict[str, Any], request: dict[str, Any]) -> dict[str, Any]:
         if isinstance(value, bool) or not isinstance(value, int) or value < 0:
             raise ValueError(f"{field} must be a non-negative integer")
         tokens[field] = value
+    holiday = request.get("cn_holiday", False)
+    if not isinstance(holiday, bool):
+        raise ValueError("cn_holiday must be true or false")
 
     unavailable = {
         "status": "unavailable",
@@ -99,13 +121,20 @@ def calculate(data: dict[str, Any], request: dict[str, Any]) -> dict[str, Any]:
     if data.get("coverage_status") != "matched":
         return {**unavailable, "reason": "Authority surfaces conflict or are unavailable."}
 
-    selected = _cost_at(data, timestamp, model_id, tokens)
+    selected = _cost_at(data, timestamp, model_id, tokens, holiday)
     if selected is None:
         return {**unavailable, "reason": "No complete declared rate basis covers this model and timestamp."}
 
+    selected_day = beijing_date(timestamp)
+    if_holiday = None
+    if selected["holiday_sensitive"] and not holiday:
+        alt = _cost_at(data, timestamp, model_id, tokens, True)
+        if_holiday = alt["cost"] if alt else None
+
     next_cheaper = None
     for candidate in _candidate_boundaries(data, timestamp):
-        compared = _cost_at(data, candidate, model_id, tokens)
+        # the holiday declaration covers the selected Beijing date only
+        compared = _cost_at(data, candidate, model_id, tokens, holiday and beijing_date(candidate) == selected_day)
         if compared is not None and compared["cost"] < selected["cost"] - 1e-15:
             savings = selected["cost"] - compared["cost"]
             next_cheaper = {
@@ -124,6 +153,9 @@ def calculate(data: dict[str, Any], request: dict[str, Any]) -> dict[str, Any]:
         "timestamp": timestamp.isoformat().replace("+00:00", "Z"),
         "model": model_id,
         "tokens": tokens,
+        "cn_holiday": holiday,
+        "beijing_date": selected_day,
         **selected,
+        "cost_if_cn_holiday": if_holiday,
         "next_cheaper": next_cheaper,
     }

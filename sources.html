@@ -11,41 +11,48 @@
   <header class="content-hero"><p class="eyebrow">Authority receipts</p><h1>What the calculator knows, where it came from, and when it was checked</h1><p class="lede">A public price table is only useful if the exact source, interpretation, and coverage gap remain inspectable.</p></header>
   <article class="prose">
     <h2>Build status</h2>
-    <p class="notice"><strong>Current authority matched.</strong> On 2026-08-28, urllib and curl returned byte-identical payloads for each language. English and Chinese pages agree on models, versions, weekday scope, equivalent windows, and the 2:1 peak/off-peak relationship. Their USD and CNY values are independent local price surfaces; no foreign-exchange conversion was used to declare agreement.</p>
+    <p class="notice"><strong>Current authority matched.</strong> On 2026-10-05, the English and Chinese pages agreed on models, versions, weekday scope, the Chinese-public-holiday exclusion, equivalent windows, and the 2:1 peak/off-peak relationship. Their USD and CNY values are independent local price surfaces; no foreign-exchange conversion was used to declare agreement.</p>
 
     <section class="source-card">
       <h3>English Models &amp; Pricing</h3>
       <p><a href="https://api-docs.deepseek.com/quick_start/pricing/">api-docs.deepseek.com/quick_start/pricing/</a></p>
-      <ul><li>Fetched: 2026-08-28 09:58:09 UTC</li><li>Payload: 23,168 bytes</li><li>Currency: USD per 1M tokens</li></ul>
-      <p><strong>Schedule quote:</strong> “Peak hours are 01:00 - 04:00 and 06:00 - 10:00 UTC, Monday through Friday (all other hours are off-peak).”</p>
-      <p class="hash"><strong>Raw SHA-256:</strong> cf2c6fb2dd8a32a538f12a8176175b8809a3516326a5cb30dfe52d63c490a968</p>
-      <p class="hash"><strong>Semantic SHA-256:</strong> 272d343dfa39eccf82d241c9d6673c0431bb2fe27931a3182e5ae3a2f0be316f</p>
+      <ul><li>Fetched: 2026-10-05 22:40:57 UTC</li><li>Payload: 23,982 bytes</li><li>Currency: USD per 1M tokens</li></ul>
+      <p><strong>Schedule quote:</strong> “Peak hours are 01:00 - 04:00 and 06:00 - 10:00 UTC, Monday through Friday, excluding Chinese public holidays. All other hours are off-peak, including weekends and Chinese public holidays in full.”</p>
+      <p class="hash"><strong>Raw SHA-256:</strong> 210f102275ccf1a6542f08a3bc9e4b4c7c83278cb74b35217bffa112df6363b2</p>
+      <p class="hash"><strong>Semantic SHA-256:</strong> feeaccc2101d0b61ee6b82821ed2296bc068111659f4d78c254831bc1c0155d4</p>
     </section>
 
     <section class="source-card">
       <h3>Chinese Models &amp; Pricing</h3>
       <p><a href="https://api-docs.deepseek.com/zh-cn/quick_start/pricing/">api-docs.deepseek.com/zh-cn/quick_start/pricing/</a></p>
-      <ul><li>Fetched: 2026-08-28 09:58:10 UTC</li><li>Payload: 23,354 bytes</li><li>Currency: CNY per 1M tokens</li></ul>
-      <p><strong>Schedule quote:</strong> “高峰时段为北京时间周一至周五 9:00 - 12:00、14:00 - 18:00（其余为空闲时段）。”</p>
-      <p class="hash"><strong>Raw SHA-256:</strong> 899affbdbc33d0be620d8dea59e86f5036c11b5410b14d060b8d2874c74f38e5</p>
-      <p class="hash"><strong>Semantic SHA-256:</strong> 22772372e62c92f90b4e9879e5eca04388076bbcfd997f8f33a989bdaa8e5043</p>
+      <ul><li>Fetched: 2026-10-05 22:40:57 UTC</li><li>Payload: 24,116 bytes</li><li>Currency: CNY per 1M tokens</li></ul>
+      <p><strong>Schedule quote:</strong> “北京时间周一至周五（不含中国法定节假日）9:00 - 12:00、14:00 - 18:00 为高峰时段；其余时段，包括周末及中国法定节假日全天均为空闲时段。”</p>
+      <p class="hash"><strong>Raw SHA-256:</strong> 5a7b1832592387340f2fc456399b34b89b05f3fa167c2e35909e2fa4afe021e3</p>
+      <p class="hash"><strong>Semantic SHA-256:</strong> 78f6c4ffd2d1414e697d3313472d3dff653050e3d4706d41f686a1183af0f022</p>
     </section>
 
     <h2>Effective-date provenance</h2>
-    <p>DeepSeek's transition notice, captured on 2026-08-15, stated: <strong>“The new prices take effect at 16:00 UTC on August 16, 2026.”</strong> The live pages now show the banded table as current and no longer repeat that transition sentence. The calculator retains the timestamp as historical provenance; current price amounts and windows come from the live pages above.</p>
+    <p>DeepSeek publishes no effective timestamp for the current table. Flash prices were reduced on 2026-09-10 (API changelog, date only), and the holiday exclusion appeared on the pricing pages between observations on 2026-09-12 and 2026-10-04, with no change date published. The calculator therefore offers estimates only from <strong>2026-10-05 22:40:57 UTC</strong>, the capture that verified the current table, onward. Earlier times are unavailable rather than priced on a guess.</p>
 
     <h2>Current USD table</h2>
     <div class="source-card">
-      <p><strong>DeepSeek V4 Flash / V4 Flash Vision Exp</strong></p>
-      <ul><li>Off-peak: $0.007 cache hit · $0.22 cache miss · $0.66 output</li><li>Peak: $0.014 cache hit · $0.44 cache miss · $1.32 output</li></ul>
-      <p><strong>DeepSeek V4 Pro</strong></p>
+      <p><strong>DeepSeek Flash</strong> (DeepSeek-V4.1-Flash; the legacy names deepseek-v4-flash and deepseek-v4-flash-vision-exp are retired and, per the vendor, billed at the Flash price)</p>
+      <ul><li>Off-peak: $0.003 cache hit · $0.15 cache miss · $0.6 output</li><li>Peak: $0.006 cache hit · $0.3 cache miss · $1.2 output</li></ul>
+      <p><strong>DeepSeek V4 Pro</strong> (DeepSeek-V4-Pro-0813)</p>
       <ul><li>Off-peak: $0.022 cache hit · $0.66 cache miss · $1.98 output</li><li>Peak: $0.044 cache hit · $1.32 cache miss · $3.96 output</li></ul>
       <p>All amounts are per 1M tokens.</p>
+    </div>
+
+    <h2>Superseded table (history, never used for an estimate)</h2>
+    <div class="source-card">
+      <p>Effective 2026-08-16 16:00 UTC (vendor transition notice) until the 2026-09-10 Flash reduction (date only). Source: deepseek-pricing-en-20260828T095809Z.html.</p>
+      <ul><li>DeepSeek V4 Flash / V4 Flash Vision Exp, off-peak: $0.007 cache hit · $0.22 cache miss · $0.66 output</li><li>Schedule then: “Peak hours are 01:00 - 04:00 and 06:00 - 10:00 UTC, Monday through Friday (all other hours are off-peak).”</li></ul>
     </div>
 
     <h2>Coverage gaps</h2>
     <ul>
       <li>No announced future rate basis appeared on either live page at build time.</li>
+      <li>DeepSeek does not list which dates count as Chinese public holidays. The Chinese page says 法定节假日 (statutory public holidays); whether make-up rest days within a holiday break count is not stated. The calculator asks you instead of guessing.</li>
       <li>No provider-side per-request invoice or billing ledger is included. The tool checks declared prices, not actual charges.</li>
       <li>The authority pages can change after this static build. The as-of timestamp is part of every estimate's evidence.</li>
       <li>The current pages reserve the right to adjust prices. This project makes no maintenance or freshness promise.</li>

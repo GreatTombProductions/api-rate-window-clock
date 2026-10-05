@@ -190,3 +190,8 @@ footer p { margin: 0; }
   footer { margin: 0 12px 24px; padding: 20px 4px; flex-direction: column; }
   footer nav { flex-wrap: wrap; }
 }
+
+.holiday-choice { display: flex; gap: .5rem; align-items: center; margin-top: .9rem; font-weight: 500; }
+.holiday-choice input { width: auto; margin: 0; }
+.holiday-note { display: block; margin-top: .35rem; opacity: .8; }
+.holiday-caveat { border-left: 4px solid #b7791f; background: #fff8e6; color: #5c3d00; padding: .6rem .8rem; border-radius: 0 8px 8px 0; margin: .6rem 0; }

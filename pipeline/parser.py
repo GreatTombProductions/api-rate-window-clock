@@ -108,34 +108,43 @@ def parse_page(body: bytes, language: str) -> dict[str, Any]:
     markup = body.decode("utf-8")
     rows = _extract_table(markup)
     text = _whole_text(markup)
+    # Schedule sentences are quoted verbatim from the page. Two generations are
+    # recognized; anything else fails closed.
+    #   2026-08: "... UTC, Monday through Friday (all other hours are off-peak)."
+    #   2026-10: "... UTC, Monday through Friday, excluding Chinese public holidays.
+    #             All other hours are off-peak, including weekends and Chinese public
+    #             holidays in full."  (ZH: 不含中国法定节假日 — statutory public holidays)
     if language == "en":
         model_row = next((row for row in rows if row and row[0].upper() == "MODEL"), None)
         version_row = next((row for row in rows if row and row[0].upper() == "MODEL VERSION"), None)
         currency = "USD"
         window_match = re.search(
-            r"Peak hours are\s+01:00\s*-\s*04:00\s+and\s+06:00\s*-\s*10:00\s+UTC,\s+Monday through Friday",
+            r"Peak hours are\s+01:00\s*-\s*04:00\s+and\s+06:00\s*-\s*10:00\s+UTC,\s+Monday through Friday"
+            r"(?:\s*\(all other hours are off-peak\)\.|,\s*excluding Chinese public holidays\.\s*All other hours are off-peak, including weekends and Chinese public holidays in full\.)",
             text,
             flags=re.I,
         )
-        quote = "Peak hours are 01:00 - 04:00 and 06:00 - 10:00 UTC, Monday through Friday (all other hours are off-peak)."
+        holiday = bool(window_match and "excluding Chinese public holidays" in window_match.group(0))
     elif language == "zh":
         model_row = next((row for row in rows if row and row[0] == "模型"), None)
         version_row = next((row for row in rows if row and row[0] == "模型版本"), None)
         currency = "CNY"
         window_match = re.search(
-            r"高峰时段为北京时间周一至周五\s*9:00\s*-\s*12:00、14:00\s*-\s*18:00",
+            r"高峰时段为北京时间周一至周五\s*9:00\s*-\s*12:00、14:00\s*-\s*18:00（其余为空闲时段）。"
+            r"|北京时间周一至周五（不含中国法定节假日）\s*9:00\s*-\s*12:00、14:00\s*-\s*18:00\s*为高峰时段；其余时段，包括周末及中国法定节假日全天均为空闲时段。",
             text,
         )
-        quote = "高峰时段为北京时间周一至周五 9:00 - 12:00、14:00 - 18:00（其余为空闲时段）。"
+        holiday = bool(window_match and "不含中国法定节假日" in window_match.group(0))
     else:
         raise ValueError(f"Unsupported language {language!r}")
 
     if model_row is None or version_row is None:
         raise ValueError(f"Missing model/version row on {language} page")
-    models = model_row[-3:]
-    versions = version_row[-3:]
-    if len(models) != len(versions) or not window_match:
+    models = [re.sub(r"\(\d+\)$", "", cell).strip() for cell in model_row[1:]]
+    versions = version_row[1:]
+    if not models or len(models) != len(versions) or not window_match:
         raise ValueError(f"Incomplete semantic authority on {language} page")
+    quote = re.sub(r"\s+", " ", window_match.group(0)).strip()
 
     rates = _parse_rate_rows(rows, models, language)
     for model in models:
@@ -157,6 +166,7 @@ def parse_page(body: bytes, language: str) -> dict[str, Any]:
                 {"start": "01:00", "end": "04:00"},
                 {"start": "06:00", "end": "10:00"},
             ],
+            "holiday_exclusion": "cn_public_holidays" if holiday else None,
             "quote": quote,
         },
         "rates": rates,
@@ -173,10 +183,12 @@ def compare_surfaces(en: dict[str, Any], zh: dict[str, Any]) -> dict[str, Any]:
         findings.append("Peak weekdays differ between EN and ZH surfaces.")
     if en["schedule"]["peak_windows"] != zh["schedule"]["peak_windows"]:
         findings.append("Peak windows differ after Beijing-to-UTC normalization.")
+    if en["schedule"].get("holiday_exclusion") != zh["schedule"].get("holiday_exclusion"):
+        findings.append("Holiday exclusion differs between EN and ZH surfaces.")
     return {
         "status": "conflict" if findings else "matched",
         "findings": findings or [
-            "EN and ZH pages agree on model IDs/versions, weekday scope, UTC windows, and the 2:1 peak/off-peak relationship. Currency amounts are independent local price surfaces and were not FX-converted."
+            "EN and ZH pages agree on model IDs/versions, weekday scope, holiday exclusion, UTC windows, and the 2:1 peak/off-peak relationship. Currency amounts are independent local price surfaces and were not FX-converted."
         ],
     }
 

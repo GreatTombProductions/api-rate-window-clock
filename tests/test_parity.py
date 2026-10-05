@@ -18,9 +18,12 @@ def main() -> int:
     requests = [case["request"] for case in cases]
     # Add second-precision and cross-date checks beyond the shared assertion table.
     requests.extend([
-        {"timestamp": "2026-09-04T09:59:37Z", "model": "deepseek-v4-pro", "cache_hit": 123456789, "cache_miss": 2345678, "output": 345678,},
-        {"timestamp": "2026-09-07T01:00:00-07:00", "model": "deepseek-v4-flash", "cache_hit": 987654321, "cache_miss": 123456, "output": 789012,},
-        {"timestamp": "2026-12-31T23:59:59Z", "model": "deepseek-v4-flash-vision-exp", "cache_hit": 1, "cache_miss": 2, "output": 3,},
+        {"timestamp": "2026-10-16T09:59:37Z", "model": "deepseek-v4-pro", "cache_hit": 123456789, "cache_miss": 2345678, "output": 345678},
+        {"timestamp": "2026-10-19T01:00:00-07:00", "model": "deepseek-flash", "cache_hit": 987654321, "cache_miss": 123456, "output": 789012},
+        {"timestamp": "2026-12-31T23:59:59Z", "model": "deepseek-flash", "cache_hit": 1, "cache_miss": 2, "output": 3},
+        {"timestamp": "2026-10-12T17:30:00Z", "model": "deepseek-flash", "cache_hit": 5, "cache_miss": 7, "output": 11, "cn_holiday": True},
+        {"timestamp": "2026-10-15T07:00:00+08:00", "model": "deepseek-v4-pro", "cache_hit": 1000, "cache_miss": 2000, "output": 3000, "cn_holiday": True},
+        {"timestamp": "2026-10-15T09:30:00+08:00", "model": "deepseek-v4-pro", "cache_hit": 1000, "cache_miss": 2000, "output": 3000, "cn_holiday": False},
     ])
     expected = [calculate(data, request) for request in requests]
     process = subprocess.run(

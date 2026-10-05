@@ -17,24 +17,38 @@ const { chromium } = require('playwright');
     assert(response.ok(), `index returned ${response.status()}`);
     await page.waitForFunction(() => !document.getElementById('calculate').disabled);
     assert((await page.locator('#authority-clock').textContent()).includes('EN + ZH matched'));
-    assert.strictEqual(await page.locator('#model option').count(), 3);
+    assert.strictEqual(await page.locator('#model option').count(), 2);
+    assert((await page.locator('#model').textContent()).includes('DeepSeek-V4.1-Flash'));
 
     await page.locator('.fixtures summary').click();
-    await page.locator('[data-fixture="2026-09-01T03:59:00Z"]').click();
-    await page.waitForFunction(() => document.getElementById('selected-cost').textContent === '$1.90');
+    await page.locator('[data-fixture="2026-10-13T03:59:00Z"]').click();
+    await page.waitForFunction(() => document.getElementById('selected-cost').textContent === '$1.56');
     assert.strictEqual((await page.locator('#result-status').textContent()).trim(), 'Peak rate');
-    assert.strictEqual((await page.locator('#next-cost').textContent()).trim(), '$0.95');
-    assert((await page.locator('#savings').textContent()).includes('$0.95 (50.0%)'));
+    assert.strictEqual((await page.locator('#next-cost').textContent()).trim(), '$0.78');
+    assert((await page.locator('#savings').textContent()).includes('$0.78 (50.0%)'));
     assert.strictEqual((await page.locator('#wait-time').textContent()).trim(), '1m');
 
-    await page.locator('[data-fixture="2026-09-01T04:00:00Z"]').click();
+    // holiday exclusion: undeclared peak carries the holiday alternative; declaring flips the band
+    const caveat = page.locator('#holiday-caveat');
+    assert(await caveat.isVisible(), 'holiday caveat hidden on a weekday peak start');
+    assert((await caveat.textContent()).includes('2026-10-13') && (await caveat.textContent()).includes('$0.78'));
+    assert((await page.locator('#holiday-label').textContent()).includes('Tuesday 2026-10-13'));
+    await page.locator('#cn-holiday').check();
     await page.waitForFunction(() => document.getElementById('result-status').textContent === 'Off-peak rate');
-    assert.strictEqual((await page.locator('#selected-cost').textContent()).trim(), '$0.95');
-    assert(await page.locator('#lowest-panel').isVisible());
+    assert.strictEqual((await page.locator('#selected-cost').textContent()).trim(), '$0.78');
+    assert((await caveat.textContent()).includes('Off-peak because you marked'));
+    await page.locator('#cn-holiday').uncheck();
+    await page.waitForFunction(() => document.getElementById('selected-cost').textContent === '$1.56');
 
-    await page.locator('[data-fixture="2026-09-05T02:00:00Z"]').click();
+    await page.locator('[data-fixture="2026-10-13T04:00:00Z"]').click();
+    await page.waitForFunction(() => document.getElementById('result-status').textContent === 'Off-peak rate');
+    assert.strictEqual((await page.locator('#selected-cost').textContent()).trim(), '$0.78');
+    assert(await page.locator('#lowest-panel').isVisible());
+    assert(await caveat.isHidden(), 'caveat shown outside a peak window');
+
+    await page.locator('[data-fixture="2026-10-17T02:00:00Z"]').click();
     await page.waitForFunction(() => document.getElementById('selected-regime').textContent === 'Off-peak');
-    assert((await page.locator('#selected-time').textContent()).includes('Sep'));
+    assert((await page.locator('#selected-time').textContent()).includes('Oct'));
 
     for (const route of ['methodology.html', 'sources.html']) {
       const companion = await page.goto(base + route, { waitUntil: 'domcontentloaded' });
@@ -61,7 +75,7 @@ const { chromium } = require('playwright');
     await conflictPage.close();
 
     assert.deepStrictEqual(errors, []);
-    console.log('Browser smoke passed: peak/off-peak boundaries, weekend, source pages, conflict gate, 390px');
+    console.log(`Browser smoke passed ${base}: current Flash rates, peak/off-peak boundaries, holiday caveat + declaration, weekend, source pages, conflict gate, 390px`);
   } finally {
     await browser.close();
   }

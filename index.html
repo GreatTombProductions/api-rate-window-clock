@@ -20,7 +20,7 @@
     <section class="hero">
       <p class="eyebrow">Declared-price timing calculator</p>
       <h1>What will this API batch cost if you run it now?</h1>
-      <p class="lede">DeepSeek charges different token rates during weekday peak windows. Enter the batch you expect to run. The clock keeps cache hits, fresh input, and output separate—and tells you whether the next cheaper band is worth waiting for.</p>
+      <p class="lede">DeepSeek charges different token rates during weekday peak windows (Chinese public holidays excepted). Enter the batch you expect to run. The clock keeps cache hits, fresh input, and output separate—and tells you whether the next cheaper band is worth waiting for.</p>
       <div class="clock-strip" aria-live="polite">
         <div><span>UTC now</span><strong id="utc-clock">—</strong></div>
         <div><span>Your local time</span><strong id="local-clock">—</strong></div>
@@ -62,15 +62,17 @@
           <label id="planned-field" hidden>Planned time (your local timezone)
             <input id="planned-time" type="datetime-local" step="60">
           </label>
+          <label class="holiday-choice"><input id="cn-holiday" type="checkbox"> <span id="holiday-label">The start's Beijing date is a Chinese public holiday</span></label>
+          <small class="holiday-note">DeepSeek bills Chinese public holidays as off-peak all day but publishes no list of those dates. Its Chinese page says 法定节假日 (statutory public holidays) and doesn't say whether make-up rest days in a holiday break count. Tick this only if you know the date qualifies.</small>
         </fieldset>
 
         <details class="fixtures">
           <summary>Inspect exact boundary fixtures</summary>
           <p>These set a known UTC timestamp so the clock's boundary rules are visible.</p>
           <div class="fixture-buttons">
-            <button type="button" data-fixture="2026-09-01T03:59:00Z">Weekday 03:59 UTC · peak</button>
-            <button type="button" data-fixture="2026-09-01T04:00:00Z">Weekday 04:00 UTC · off-peak</button>
-            <button type="button" data-fixture="2026-09-05T02:00:00Z">Saturday 02:00 UTC · off-peak</button>
+            <button type="button" data-fixture="2026-10-13T03:59:00Z">Weekday 03:59 UTC · peak</button>
+            <button type="button" data-fixture="2026-10-13T04:00:00Z">Weekday 04:00 UTC · off-peak</button>
+            <button type="button" data-fixture="2026-10-17T02:00:00Z">Saturday 02:00 UTC · off-peak</button>
           </div>
         </details>
 
@@ -95,6 +97,7 @@
           <p class="result-kicker">Declared cost at the selected start time</p>
           <p id="selected-cost" class="result-number">—</p>
           <p id="selected-summary" class="result-summary">—</p>
+          <p id="holiday-caveat" class="holiday-caveat" hidden></p>
           <dl class="result-details">
             <div><dt>Band</dt><dd id="selected-regime">—</dd></div>
             <div><dt>Start</dt><dd id="selected-time">—</dd></div>
@@ -130,7 +133,7 @@
       <div>
         <p class="eyebrow">The rule the calculator applies</p>
         <h2>Peak is a weekday condition, not just an hour.</h2>
-        <p>Peak rates apply Monday–Friday at <strong>01:00–04:00</strong> and <strong>06:00–10:00 UTC</strong>. Every other hour—including those same hours on Saturday and Sunday—is off-peak. Window starts are included; window ends are not.</p>
+        <p>Peak rates apply Monday–Friday at <strong>01:00–04:00</strong> and <strong>06:00–10:00 UTC</strong>, <strong>except on Chinese public holidays</strong>. Every other hour is off-peak, including those same hours on Saturday, Sunday and Chinese public holidays. Window starts are included; window ends are not.</p>
       </div>
       <div class="schedule-visual" aria-label="Weekday UTC price schedule">
         <div class="schedule-label"><span>00</span><span>04</span><span>08</span><span>12</span><span>16</span><span>20</span><span>24 UTC</span></div>
