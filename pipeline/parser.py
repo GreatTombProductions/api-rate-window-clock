@@ -74,12 +74,32 @@ def _whole_text(markup: str) -> str:
     return re.sub(r"\s+", " ", html_module.unescape(stripped)).strip(" \x00")
 
 
-def _extract_table(markup: str) -> list[list[str]]:
+# Header rows of tables the page may carry besides the model table. Since 2026-10
+# (first seen 2026-10-25) the page adds a per-request Search & Fetch price table.
+# It is outside the token calculator's scope but is recorded, so a change to it moves
+# the semantic hash. Any other extra table fails closed.
+PER_REQUEST_HEADERS = {"en": ["API", "Unit", "Price"], "zh": ["API", "计费单位", "价格"]}
+MODEL_LABELS = {"en": "MODEL", "zh": "模型"}
+
+
+def _extract_tables(markup: str, language: str) -> tuple[list[list[str]], list[dict[str, str]]]:
     parser = TableParser()
     parser.feed(markup)
-    if len(parser.tables) != 1:
-        raise ValueError(f"Expected exactly one pricing table, found {len(parser.tables)}")
-    return parser.tables[0]
+    label = MODEL_LABELS.get(language)
+    model_tables, per_request = [], []
+    for table in parser.tables:
+        if any(row and row[0].upper() == label for row in table):
+            model_tables.append(table)
+        elif table and table[0] == PER_REQUEST_HEADERS.get(language):
+            for row in table[1:]:
+                if len(row) != 3:
+                    raise ValueError(f"Per-request price table row has {len(row)} cells on {language} page")
+                per_request.append({"api": row[0], "unit": row[1], "price": row[2]})
+        else:
+            raise ValueError(f"Unrecognized additional table on {language} page (header {table[:1]!r})")
+    if len(model_tables) != 1:
+        raise ValueError(f"Expected exactly one model pricing table, found {len(model_tables)}")
+    return model_tables[0], per_request
 
 
 def _parse_rate_rows(rows: list[list[str]], models: list[str], language: str) -> dict[str, Any]:
@@ -106,7 +126,7 @@ def _parse_rate_rows(rows: list[list[str]], models: list[str], language: str) ->
 
 def parse_page(body: bytes, language: str) -> dict[str, Any]:
     markup = body.decode("utf-8")
-    rows = _extract_table(markup)
+    rows, per_request = _extract_tables(markup, language)
     text = _whole_text(markup)
     # Schedule sentences are quoted verbatim from the page. Two generations are
     # recognized; anything else fails closed.
@@ -170,6 +190,9 @@ def parse_page(body: bytes, language: str) -> dict[str, Any]:
             "quote": quote,
         },
         "rates": rates,
+        # Standalone per-request APIs (Search/Fetch). Not token-priced and not used by
+        # the calculator; verbatim cells so any change is visible in the semantic hash.
+        "per_request_apis": per_request,
     }
     record["semantic_sha256"] = semantic_hash(record)
     return record

@@ -3,21 +3,21 @@
   "provider": "DeepSeek",
   "currency": "USD",
   "unit_tokens": 1000000,
-  "generated_at": "2026-10-05T22:47:29.566807Z",
-  "current_as_of": "2026-10-05T22:40:57Z",
+  "generated_at": "2026-10-25T03:17:45.883501Z",
+  "current_as_of": "2026-10-25T03:07:32Z",
   "coverage_status": "matched",
   "coverage_findings": [
     "EN and ZH pages agree on model IDs/versions, weekday scope, holiday exclusion, UTC windows, and the 2:1 peak/off-peak relationship. Currency amounts are independent local price surfaces and were not FX-converted."
   ],
   "price_bases": [
     {
-      "id": "deepseek-verified-2026-10-05",
+      "id": "deepseek-verified-2026-10-25",
       "status": "current",
-      "effective_at": "2026-10-05T22:40:57Z",
+      "effective_at": "2026-10-25T03:07:32Z",
       "effective_date_provenance": {
         "type": "verified_from_capture",
-        "captured_at": "2026-10-05T22:40:57Z",
-        "note": "The vendor publishes no effective timestamp for this table. Flash prices were reduced on 2026-09-10 (changelog, date only) and the Chinese-public-holiday exclusion appeared between the 2026-09-12 and 2026-10-04 observations (no change date published). Estimates are offered only from the capture that verified the current table onward."
+        "captured_at": "2026-10-25T03:07:32Z",
+        "note": "The vendor publishes no effective timestamp for this table. Flash prices were reduced on 2026-09-10 (changelog, date only) and the Chinese-public-holiday exclusion appeared between the 2026-09-12 and 2026-10-04 observations (no change date published). Between the 2026-10-05 and 2026-10-25 observations the Flash model version label became DeepSeek-V4.1-Flash-1017 with token rates and schedule unchanged, and the pages added separate per-request Search & Fetch pricing (outside this calculator). Estimates are offered only from the capture that verified the current table onward."
       },
       "schedule": {
         "timezone": "UTC",
@@ -45,7 +45,7 @@
         {
           "id": "deepseek-flash",
           "name": "DeepSeek Flash",
-          "version": "DeepSeek-V4.1-Flash",
+          "version": "DeepSeek-V4.1-Flash-1017",
           "rates": {
             "off_peak": {
               "cache_hit": 0.003,
@@ -144,20 +144,20 @@
     {
       "language": "English",
       "url": "https://api-docs.deepseek.com/quick_start/pricing/",
-      "captured_at": "2026-10-05T22:40:57Z",
-      "raw_file": "deepseek-pricing-en-20261005T224057Z.html",
-      "raw_sha256": "210f102275ccf1a6542f08a3bc9e4b4c7c83278cb74b35217bffa112df6363b2",
-      "semantic_sha256": "feeaccc2101d0b61ee6b82821ed2296bc068111659f4d78c254831bc1c0155d4",
+      "captured_at": "2026-10-25T03:07:32Z",
+      "raw_file": "deepseek-pricing-en-20261025T030732Z.html",
+      "raw_sha256": "b856a6e93fa4793ecc8f3fd03a01bb7d8f7572f78a4739da8ce6dbdb09328d66",
+      "semantic_sha256": "22446691ad0643fcdbc45bf5baecffb2722f0de11f6b5e6cf5c70084ae5635e3",
       "currency": "USD",
       "schedule_quote": "Peak hours are 01:00 - 04:00 and 06:00 - 10:00 UTC, Monday through Friday, excluding Chinese public holidays. All other hours are off-peak, including weekends and Chinese public holidays in full."
     },
     {
       "language": "Chinese",
       "url": "https://api-docs.deepseek.com/zh-cn/quick_start/pricing/",
-      "captured_at": "2026-10-05T22:40:57Z",
-      "raw_file": "deepseek-pricing-zh-20261005T224057Z.html",
-      "raw_sha256": "5a7b1832592387340f2fc456399b34b89b05f3fa167c2e35909e2fa4afe021e3",
-      "semantic_sha256": "78f6c4ffd2d1414e697d3313472d3dff653050e3d4706d41f686a1183af0f022",
+      "captured_at": "2026-10-25T03:07:32Z",
+      "raw_file": "deepseek-pricing-zh-20261025T030732Z.html",
+      "raw_sha256": "556097caba8adfeeed6455714bffd731c7f60db520fcee06a922eba5840663a3",
+      "semantic_sha256": "28232b9aac95d943d7ab32dfd284b0ea779dff30b3b609ddb3d8e1e3516427a8",
       "currency": "CNY",
       "schedule_quote": "北京时间周一至周五（不含中国法定节假日）9:00 - 12:00、14:00 - 18:00 为高峰时段；其余时段，包括周末及中国法定节假日全天均为空闲时段。",
       "local_currency_rates": {

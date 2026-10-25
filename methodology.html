@@ -12,7 +12,7 @@
   <article class="prose">
     <h2>1. Select the rate basis by effective time</h2>
     <p>Every price basis carries an ISO 8601 <code>effective_at</code> timestamp. For a planned start, the calculator selects the latest complete basis whose effective timestamp is not later than the start. A future basis is never applied early. If no basis covers the time, the result is <strong>unavailable</strong> rather than zero.</p>
-    <p>DeepSeek publishes no effective timestamp for the current table: Flash prices were cut on 2026-09-10 (changelog, date only) and the holiday exclusion appeared without a change date. The current basis is therefore claimed only from <strong>2026-10-05 22:40:57 UTC</strong>, the capture that verified it. Earlier start times are unavailable. The previous table (effective 2026-08-16 16:00 UTC per the vendor's transition notice) is kept on the sources page as history and is never used for an estimate.</p>
+    <p>DeepSeek publishes no effective timestamp for the current table: Flash prices were cut on 2026-09-10 (changelog, date only) and the holiday exclusion appeared without a change date. The current basis is therefore claimed only from <strong>2026-10-25 03:07:32 UTC</strong>, the capture that verified it. Earlier start times are unavailable. The previous table (effective 2026-08-16 16:00 UTC per the vendor's transition notice) is kept on the sources page as history and is never used for an estimate.</p>
 
     <h2>2. Classify the start time in UTC</h2>
     <p>The current DeepSeek page says peak hours are <strong>01:00–04:00 and 06:00–10:00 UTC, Monday through Friday, excluding Chinese public holidays</strong>, with those holidays off-peak in full. The intervals are half-open:</p>
@@ -32,7 +32,7 @@
     <p>The engine enumerates exact schedule and effective-date boundaries for the next eight days. It recomputes the same token mix at each boundary and returns the earliest one with a strictly lower total. If the workload is already in the cheapest declared band and no announced future basis lowers the amount, it says so plainly.</p>
 
     <h2>5. Separate current and announced-future prices</h2>
-    <p>The schema has a dedicated <code>announced_future_bases</code> collection. At the 2026-10-05 build, the live pages published no future replacement table. The site therefore applies only the current basis. A future table would be displayed separately and would remain mathematically inactive until its own effective timestamp.</p>
+    <p>The schema has a dedicated <code>announced_future_bases</code> collection. At the 2026-10-25 build, the live pages published no future replacement token table. The site therefore applies only the current basis. A future table would be displayed separately and would remain mathematically inactive until its own effective timestamp.</p>
 
     <h2>Source-change gate</h2>
     <p>The build parses English and Chinese pages independently, normalizes the model IDs, versions, weekday scope, holiday exclusion, windows, and per-band rates, and hashes those semantic records. A changed semantic hash fails the build until a person or agent reviews the new table and explicitly accepts the pin. Source disagreement sets coverage to <code>conflict</code> and disables estimates; rates are never averaged.</p>

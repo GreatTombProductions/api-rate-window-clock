@@ -1,11 +1,11 @@
 {
   "schema_version": 1,
-  "en_semantic_sha256": "feeaccc2101d0b61ee6b82821ed2296bc068111659f4d78c254831bc1c0155d4",
-  "zh_semantic_sha256": "78f6c4ffd2d1414e697d3313472d3dff653050e3d4706d41f686a1183af0f022",
+  "en_semantic_sha256": "22446691ad0643fcdbc45bf5baecffb2722f0de11f6b5e6cf5c70084ae5635e3",
+  "zh_semantic_sha256": "28232b9aac95d943d7ab32dfd284b0ea779dff30b3b609ddb3d8e1e3516427a8",
   "agreement_status": "matched",
   "model_ids": [
     "deepseek-flash",
     "deepseek-v4-pro"
   ],
-  "effective_at": "2026-10-05T22:40:57Z"
+  "effective_at": "2026-10-25T03:07:32Z"
 }

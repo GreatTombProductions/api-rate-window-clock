@@ -35,9 +35,12 @@ def main() -> int:
             stage = Path(os.environ["SMOKE_SITE"])
         else:
             stage = Path(temporary)
-            shutil.copytree(PROJECT / "frontend", stage, dirs_exist_ok=True)
-            (stage / "data").mkdir()
-            shutil.copy2(PROJECT / "data" / "rates.json", stage / "data" / "rates.json")
+            if (PROJECT / "frontend").is_dir():
+                shutil.copytree(PROJECT / "frontend", stage, dirs_exist_ok=True)
+                (stage / "data").mkdir()
+                shutil.copy2(PROJECT / "data" / "rates.json", stage / "data" / "rates.json")
+            else:  # published repository: the pages and data/ already sit at the root
+                stage = PROJECT
         handler = functools.partial(http.server.SimpleHTTPRequestHandler, directory=stage)
         server = http.server.ThreadingHTTPServer(("127.0.0.1", 0), handler)
         thread = threading.Thread(target=server.serve_forever, daemon=True)

@@ -20,12 +20,12 @@ A vendor can publish every price and still leave the actual decision opaque. UTC
 
 ## Authority
 
-The 2026-10-05 refresh independently parsed DeepSeek's English and Chinese Models & Pricing pages (the first build used 2026-08-28 captures; that table is kept as labeled history):
+The 2026-10-25 refresh independently parsed DeepSeek's English and Chinese Models & Pricing pages (the first build used 2026-08-28 captures; that table is kept as labeled history):
 
 - https://api-docs.deepseek.com/quick_start/pricing/
 - https://api-docs.deepseek.com/zh-cn/quick_start/pricing/
 
-The two language surfaces agree on model IDs/versions, weekday scope, the holiday exclusion, equivalent windows, and the stated 2:1 peak/off-peak relationship. USD and CNY are independent vendor price surfaces; the build does not use FX conversion as an agreement test.
+The two language surfaces agree on model IDs/versions, weekday scope, the holiday exclusion, equivalent windows, and the stated 2:1 peak/off-peak relationship. USD and CNY are independent vendor price surfaces; the build does not use FX conversion as an agreement test. Both pages also list per-request Search and Fetch APIs; they are recorded in the semantic pin but are not token-priced, so the calculator does not include them.
 
 Normalized semantic records are pinned. A changed model, window, weekday, holiday rule, or rate fails the build pending inspection. The vendor publishes no effective timestamp for the current table, so estimates start at the capture that verified it. Missing or conflicting rates become `unavailable`, never zero.
 
@@ -73,13 +73,30 @@ python3 pipeline/build.py --accept-source-change
 
 The public source receipts page contains the exact hashes for the deployed build and should be updated whenever a new semantic pin is accepted.
 
+### Check whether the live calculator still matches DeepSeek
+
+One command re-fetches both pricing pages, rebuilds with this repository's own parser and build script in a temporary copy, and compares the result with the published site:
+
+```bash
+python3 pipeline/freshness.py --output /tmp/rate-window-freshness.json
+```
+
+It needs Python 3.11+ and network access, and it works from this repository as published. It compares every value behind the calculator (`data/rates.json`: models, versions, rates by token class and band, weekdays, windows, holiday rule, schedule quotes, Chinese-page CNY amounts, semantic hashes), plus the hand-written table, quotes and hashes on the sources page. It never writes to `data/`, `pipeline/expected_semantics.json` or the pages. Use `--published-base DIR` to compare a local checkout or an assembled site instead of the live one, and `--captures-dir DIR` to keep the fetched pages for review.
+
+- **Exit 0:** no published value differs from the live pages.
+- **Exit 1:** at least one published value differs. Each one is printed with its field, the published value and the live value. A change is still reported when the reviewed pin would refuse it.
+- **Exit 2:** incomplete. A page could not be fetched or parsed, the English and Chinese pages conflict, or the published site could not be read. Incomplete takes precedence over clean or changed.
+
+Every run states how many of the two current pricing pages it opened. Raw HTML changes on every docs-site rebuild (asset names, class names), so raw-byte and page-text changes are reported for information only. So are the capture timestamps and raw hashes that a rebuild would move. The 2026-08-28 English capture behind the superseded table is retained evidence and is not re-fetched, because the live page no longer carries that table. The tool has one current price basis and no monthly dimension, so there is no month argument. Deciding what to do about an exit 1 (re-fetch, review, `--accept-source-change`, redeploy) is the maintainer's call.
+
 ## Repository layout
 
 - `pipeline/fetch.py` — deadline-bounded multi-transport fetch
 - `pipeline/parser.py` — dependency-free EN/ZH semantic parser
+- `pipeline/freshness.py` — re-fetch, scratch rebuild and comparison against the published site
 - `pipeline/calculator.py` — Python reference engine
 - `pipeline/expected_semantics.json` — reviewed semantic pin
-- `frontend/calculator.js` — browser mirror
+- `calculator.js`, `app.js`, `index.html`, `methodology.html`, `sources.html` — the page and its browser calculator mirror (in a frontend directory in the source checkout; at the repository root as published)
 - `tests/cases.json` — shared cross-language fixtures
 - `data/rates.json` — static schema consumed by the browser
 - `data/raw/` — authority captures and response headers

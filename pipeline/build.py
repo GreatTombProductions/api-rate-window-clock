@@ -121,8 +121,11 @@ def main() -> int:
                 "note": (
                     "The vendor publishes no effective timestamp for this table. Flash prices were reduced on "
                     "2026-09-10 (changelog, date only) and the Chinese-public-holiday exclusion appeared between "
-                    "the 2026-09-12 and 2026-10-04 observations (no change date published). Estimates are offered "
-                    "only from the capture that verified the current table onward."
+                    "the 2026-09-12 and 2026-10-04 observations (no change date published). Between the 2026-10-05 "
+                    "and 2026-10-25 observations the Flash model version label became DeepSeek-V4.1-Flash-1017 "
+                    "with token rates and schedule unchanged, and the pages added separate per-request Search & "
+                    "Fetch pricing (outside this calculator). Estimates are offered only from the capture that "
+                    "verified the current table onward."
                 ),
             },
             "schedule": en["schedule"],
